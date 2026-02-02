@@ -214,7 +214,7 @@ function initTypingAnimation() {
   const typingElement = document.getElementById('typing-text');
   if (!typingElement) return;
   
-  const words = ['Web Developer', 'Pelajar', 'Content Creator', 'UI Designer'];
+  const words = ['Mager', 'Pelajar', 'Sleeper', 'Rebahaner'];
   let wordIndex = 0;
   let charIndex = 0;
   let isDeleting = false;
@@ -356,12 +356,19 @@ function initParticles() {
     }
     
     reset() {
-      this.x = Math.random() * canvas.width * 1.5;
+      // Random starting position across the entire top
+      this.x = Math.random() * canvas.width;
       this.y = -10;
-      this.length = Math.random() * 80 + 50;
-      this.speed = Math.random() * 15 + 10;
+      this.length = Math.random() * 100 + 60;
+      this.speed = Math.random() * 18 + 12;
       this.opacity = 1;
-      this.angle = Math.PI / 4 + (Math.random() * 0.2 - 0.1); // ~45 degrees
+      // Angle varies between 30 and 60 degrees (going down-right or down-left)
+      const goLeft = Math.random() > 0.5;
+      if (goLeft) {
+        this.angle = Math.PI * 0.6 + (Math.random() * 0.3); // Goes down-left
+      } else {
+        this.angle = Math.PI * 0.15 + (Math.random() * 0.3); // Goes down-right
+      }
       this.active = false;
     }
     
@@ -370,6 +377,13 @@ function initParticles() {
       this.x = Math.random() * canvas.width;
       this.y = -10;
       this.opacity = 1;
+      // Re-randomize angle on activation
+      const goLeft = Math.random() > 0.5;
+      if (goLeft) {
+        this.angle = Math.PI * 0.6 + (Math.random() * 0.3);
+      } else {
+        this.angle = Math.PI * 0.15 + (Math.random() * 0.3);
+      }
     }
     
     update() {
@@ -518,21 +532,21 @@ function initParticles() {
   // Initialize shapes
   createShapes();
   
-  // Create shooting stars
-  for (let i = 0; i < 3; i++) {
+  // Create shooting stars (more of them!)
+  for (let i = 0; i < 8; i++) {
     shootingStars.push(new ShootingStar());
   }
   
   // Initialize stars
   createStars();
   
-  // Randomly trigger shooting stars
+  // Randomly trigger shooting stars (more frequently!)
   setInterval(() => {
-    const inactiveStar = shootingStars.find(s => !s.active);
-    if (inactiveStar && Math.random() < 0.3) {
-      inactiveStar.activate();
+    const inactiveStars = shootingStars.filter(s => !s.active);
+    if (inactiveStars.length > 0 && Math.random() < 0.6) {
+      inactiveStars[0].activate();
     }
-  }, 2000);
+  }, 800);
   
   // Draw night sky gradient
   function drawSkyGradient() {
