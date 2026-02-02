@@ -543,10 +543,10 @@ function initParticles() {
   // Randomly trigger shooting stars (more frequently!)
   setInterval(() => {
     const inactiveStars = shootingStars.filter(s => !s.active);
-    if (inactiveStars.length > 0 && Math.random() < 0.6) {
+    if (inactiveStars.length > 0 && Math.random() < 0.9) {
       inactiveStars[0].activate();
     }
-  }, 800);
+  }, 100);
   
   // Draw night sky gradient
   function drawSkyGradient() {
