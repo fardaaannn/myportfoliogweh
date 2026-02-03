@@ -1,3 +1,42 @@
+/**
+ * ===== Configuration Constants =====
+ * Central place for magic numbers and configuration
+ */
+const CONFIG = {
+  // Loader timing
+  LOADER_DELAY: 800,
+  
+  // Cursor settings
+  CURSOR_TRAIL_COUNT: 8,
+  CURSOR_FOLLOW_SPEED: 0.15,
+  
+  // Animation timings
+  TOAST_DURATION: 3000,
+  TYPING_SPEED: 100,
+  TYPING_DELETE_SPEED: 50,
+  TYPING_PAUSE_END: 2000,
+  TYPING_PAUSE_START: 500,
+  
+  // Scroll reveal
+  REVEAL_DELAY_INCREMENT: 100,
+  REVEAL_THRESHOLD: 0.1,
+  
+  // WhatsApp
+  WA_NUMBER: '6285176849339',
+  
+  // Padding
+  NAV_PADDING_OFFSET: 20
+};
+
+// ===== Dynamic Body Padding (for mobile responsiveness) =====
+function setBodyPadding() {
+  const nav = document.querySelector('nav');
+  if (nav) {
+    const navHeight = nav.offsetHeight;
+    document.body.style.paddingTop = (navHeight + CONFIG.NAV_PADDING_OFFSET) + 'px';
+  }
+}
+
 // ===== Dark Mode Toggle =====
 function initTheme() {
   const savedTheme = localStorage.getItem('theme') || 'light';
@@ -56,12 +95,12 @@ function initScrollReveal() {
       if (entry.isIntersecting) {
         setTimeout(() => {
           entry.target.classList.add('visible');
-        }, index * 100);
+        }, index * CONFIG.REVEAL_DELAY_INCREMENT);
         observer.unobserve(entry.target);
       }
     });
   }, {
-    threshold: 0.1,
+    threshold: CONFIG.REVEAL_THRESHOLD,
     rootMargin: '0px 0px -50px 0px'
   });
   
@@ -139,8 +178,7 @@ function initFormValidation() {
           `*Pesan:*%0A${pesan}`;
         
         // WhatsApp number (Indonesia: 62)
-        const waNumber = '6285176849339';
-        const waUrl = `https://wa.me/${waNumber}?text=${waMessage}`;
+        const waUrl = `https://wa.me/${CONFIG.WA_NUMBER}?text=${waMessage}`;
         
         // Open WhatsApp
         window.open(waUrl, '_blank');
@@ -180,11 +218,11 @@ function showToast(message) {
   // Show toast
   setTimeout(() => toast.classList.add('show'), 100);
   
-  // Hide toast after 3 seconds
+  // Hide toast after configured duration
   setTimeout(() => {
     toast.classList.remove('show');
     setTimeout(() => toast.remove(), 300);
-  }, 3000);
+  }, CONFIG.TOAST_DURATION);
 }
 
 // ===== Initialize Everything =====
@@ -196,8 +234,116 @@ document.addEventListener('DOMContentLoaded', () => {
   initFormValidation();
   initTypingAnimation();
   initParticles();
+  initCustomCursor();
+  setBodyPadding();
   hideLoader();
 });
+
+// Update padding on resize for responsiveness
+window.addEventListener('resize', setBodyPadding);
+
+// ===== Custom Cursor Effect =====
+function initCustomCursor() {
+  // Don't init on touch devices
+  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+    return;
+  }
+  
+  // Create cursor elements
+  const cursor = document.createElement('div');
+  cursor.className = 'custom-cursor';
+  document.body.appendChild(cursor);
+  
+  const cursorDot = document.createElement('div');
+  cursorDot.className = 'cursor-dot';
+  document.body.appendChild(cursorDot);
+  
+  // Create trail elements
+  const trailCount = CONFIG.CURSOR_TRAIL_COUNT;
+  const trails = [];
+  for (let i = 0; i < trailCount; i++) {
+    const trail = document.createElement('div');
+    trail.className = 'cursor-trail';
+    trail.style.opacity = (1 - (i / trailCount)) * 0.5;
+    trail.style.width = (6 - (i * 0.5)) + 'px';
+    trail.style.height = (6 - (i * 0.5)) + 'px';
+    document.body.appendChild(trail);
+    trails.push({
+      element: trail,
+      x: 0,
+      y: 0
+    });
+  }
+  
+  let mouseX = 0;
+  let mouseY = 0;
+  let cursorX = 0;
+  let cursorY = 0;
+  
+  // Track mouse movement
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    
+    // Update dot position immediately
+    cursorDot.style.left = mouseX + 'px';
+    cursorDot.style.top = mouseY + 'px';
+  });
+  
+  // Smooth cursor animation
+  function animateCursor() {
+    // Smooth follow for main cursor
+    cursorX += (mouseX - cursorX) * CONFIG.CURSOR_FOLLOW_SPEED;
+    cursorY += (mouseY - cursorY) * CONFIG.CURSOR_FOLLOW_SPEED;
+    
+    cursor.style.left = cursorX + 'px';
+    cursor.style.top = cursorY + 'px';
+    
+    // Animate trails
+    let prevX = mouseX;
+    let prevY = mouseY;
+    
+    trails.forEach((trail, index) => {
+      const speed = 0.2 - (index * 0.015);
+      trail.x += (prevX - trail.x) * speed;
+      trail.y += (prevY - trail.y) * speed;
+      
+      trail.element.style.left = trail.x + 'px';
+      trail.element.style.top = trail.y + 'px';
+      
+      prevX = trail.x;
+      prevY = trail.y;
+    });
+    
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+  
+  // Hover effects for interactive elements
+  const hoverElements = document.querySelectorAll('a, button, .kartu-ios, .project-card, .social-link, input, textarea, .theme-switch');
+  
+  hoverElements.forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.classList.add('hover');
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.classList.remove('hover');
+    });
+  });
+  
+  // Hide cursor when leaving window
+  document.addEventListener('mouseleave', () => {
+    cursor.style.opacity = '0';
+    cursorDot.style.opacity = '0';
+    trails.forEach(trail => trail.element.style.opacity = '0');
+  });
+  
+  document.addEventListener('mouseenter', () => {
+    cursor.style.opacity = '1';
+    cursorDot.style.opacity = '1';
+    trails.forEach((trail, i) => trail.element.style.opacity = (1 - (i / trailCount)) * 0.5);
+  });
+}
 
 // ===== Loading Animation =====
 function hideLoader() {
@@ -205,7 +351,7 @@ function hideLoader() {
   if (loader) {
     setTimeout(() => {
       loader.classList.add('hidden');
-    }, 800);
+    }, CONFIG.LOADER_DELAY);
   }
 }
 
@@ -214,11 +360,11 @@ function initTypingAnimation() {
   const typingElement = document.getElementById('typing-text');
   if (!typingElement) return;
   
-  const words = ['Mager', 'Pelajar', 'Sleeping Head', 'Rebahaner'];
+  const words = ['Mager', 'Pelajar', 'Sleepy Head', 'Rebahaner'];
   let wordIndex = 0;
   let charIndex = 0;
   let isDeleting = false;
-  let typeSpeed = 100;
+  let typeSpeed = CONFIG.TYPING_SPEED;
   
   function type() {
     const currentWord = words[wordIndex];
@@ -226,20 +372,20 @@ function initTypingAnimation() {
     if (isDeleting) {
       typingElement.textContent = currentWord.substring(0, charIndex - 1);
       charIndex--;
-      typeSpeed = 50;
+      typeSpeed = CONFIG.TYPING_DELETE_SPEED;
     } else {
       typingElement.textContent = currentWord.substring(0, charIndex + 1);
       charIndex++;
-      typeSpeed = 100;
+      typeSpeed = CONFIG.TYPING_SPEED;
     }
     
     if (!isDeleting && charIndex === currentWord.length) {
       isDeleting = true;
-      typeSpeed = 2000; // Pause at end
+      typeSpeed = CONFIG.TYPING_PAUSE_END;
     } else if (isDeleting && charIndex === 0) {
       isDeleting = false;
       wordIndex = (wordIndex + 1) % words.length;
-      typeSpeed = 500; // Pause before new word
+      typeSpeed = CONFIG.TYPING_PAUSE_START;
     }
     
     setTimeout(type, typeSpeed);
