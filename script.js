@@ -214,7 +214,7 @@ function initTypingAnimation() {
   const typingElement = document.getElementById('typing-text');
   if (!typingElement) return;
   
-  const words = ['Mager', 'Pelajar', 'Sleeper', 'Rebahaner'];
+  const words = ['Mager', 'Pelajar', 'Sleeping Head', 'Rebahaner'];
   let wordIndex = 0;
   let charIndex = 0;
   let isDeleting = false;
