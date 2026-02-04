@@ -227,6 +227,7 @@ function showToast(message) {
 
 // ===== Initialize Everything =====
 document.addEventListener('DOMContentLoaded', () => {
+  initRandomLoader(); // Initialize random loader first
   initTheme();
   initHamburger();
   initScrollReveal();
@@ -345,7 +346,27 @@ function initCustomCursor() {
   });
 }
 
-// ===== Loading Animation =====
+// ===== Sequential Loading Animation =====
+function initRandomLoader() {
+  const loaderContents = document.querySelectorAll('.loader-content');
+  if (loaderContents.length === 0) return;
+  
+  // Get current loader index from localStorage, default to 0
+  let currentIndex = parseInt(localStorage.getItem('loaderIndex') || '0');
+  
+  // Make sure index is valid
+  if (currentIndex >= loaderContents.length || currentIndex < 0) {
+    currentIndex = 0;
+  }
+  
+  // Activate the current loader
+  loaderContents[currentIndex].classList.add('active');
+  
+  // Save next index for next page load (cycles through 0-6)
+  const nextIndex = (currentIndex + 1) % loaderContents.length;
+  localStorage.setItem('loaderIndex', nextIndex.toString());
+}
+
 function hideLoader() {
   const loader = document.querySelector('.loader-wrapper');
   if (loader) {
