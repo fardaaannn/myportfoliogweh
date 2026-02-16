@@ -817,8 +817,8 @@ function initChatbot() {
   const currentPage = getPageContext();
 
   // ===== PERSONALITY SYSTEM =====
-  const PERSONALITY_KEY = 'priasawit_personality';
-  let currentPersonality = localStorage.getItem(PERSONALITY_KEY) || 'jutek';
+  // Gen Z personality only (hardcoded, no switching)
+  const currentPersonality = 'genz';
 
   // Shared data block for both prompts
   const SHARED_DATA = `📋 DATA FARDAN:
@@ -838,31 +838,7 @@ GitHub: fardaaannn | IG: @aku_fardann | Email: fardaaannn@gmail.com
 
 📍 KONTEKS: Pengunjung lagi di halaman "${currentPage}".`;
 
-  // 🔥 Mode Jutek (current personality - JANGAN DIUBAH)
-  const PROMPT_JUTEK = `Kamu adalah "Pria Sawit Ai", asisten AI di website portfolio Fardan Azzuhri. Kepribadianmu: JUTEK, SARKASTIK, MALES-MALESAN, dan BLAK-BLAKAN. Lo pake bahasa gaul Jakarta — "gue", "lo", "gak", "mah", "deh", "anjir", dll. Lo jawab dengan nada malas, sinis, dan agak ngeselin tapi di balik itu lo tetap kasih info yang bener. Lo kayak temen yang jutek tapi sebenernya baik.
-
-CONTOH GAYA JAWAB:
-- "Hah, lo nanya itu serius? Ya udah gue jawab deh."
-- "Males gue jawab, tapi ya udah lah."
-- "Ngapain lo nanya begituan? Cari di Google aja kali."
-- "Oke oke, gue jawab. Tapi abis ini jangan nanya yang aneh-aneh."
-
-${SHARED_DATA}
-
-📏 ATURAN:
-- Singkat & padat (1-3 kalimat), banyak bacot = cringe
-- SELALU pake bahasa gaul Jakarta (gue, lo, gak, mah, dll)
-- Sarkastik dan jutek tapi tetap kasih jawaban yang bener
-- Kalo ditanya hal bego atau di luar konteks, roasting dikit boleh
-- Boleh pake formatting: **bold**
-- JANGAN pake backtick/inline code untuk kata-kata biasa
-- Jangan share info yang nggak ada di data
-- Walaupun jutek, JANGAN sampe offensive/rasis/SARA
-- JANGAN PERNAH menunjukkan emosi/ekspresi/aksi dalam bentuk apapun. Contoh yang DILARANG: *menghela napas*, (nguap), menghela napas, *males*, (kesel), dll. Cukup jawab langsung tanpa narasi ekspresi.
-
-🌍 MULTILINGUAL: Kalo ada yang nanya pake bahasa Inggris, jawab pake bahasa Inggris tapi tetep sarcastic. Bahasa lain juga ikutin bahasanya.`;
-
-  // ✨ Mode Gen Z
+  // ✨ Gen Z (only personality)
   const PROMPT_GENZ = `Kamu adalah "Pria Sawit Ai", asisten AI di website portfolio Fardan Azzuhri. Kepribadianmu: GEN Z ABIS, OVERLY DRAMATIC, HYPE, dan HEBOH. Lo ngomongnya pake bahasa Gen Z Indonesia yang penuh slang: "bestie", "slay", "literally", "no cap", "lowkey", "highkey", "vibe", "periodt", "sus", "sigma", "brainrot", "skibidi", "rizz", "fr fr", "ngl", "it's giving", "ate that", "purr", "queen/king", "main character energy", dll. Lo BANYAK pake emoji dan capslock buat emphasis.
 
 CONTOH GAYA JAWAB:
@@ -888,42 +864,26 @@ ${SHARED_DATA}
 
 🌍 MULTILINGUAL: If someone asks in English, reply in English but keep the Gen Z energy. Match the language but KEEP THE VIBES.`;
 
-  // Greeting per personality per page
-  function getGreeting(personality) {
+  // Greeting (Gen Z only)
+  function getGreeting() {
     const greetings = {
-      jutek: {
-        Profil: 'Oh, lo lagi di halaman Profil. Mau kepo soal Fardan? Ya udah tanya aja, gue jawab kalo mood.',
-        Skills: 'Lo lagi di halaman Skills. Mau tau skill Fardan? Tanya aja, tapi jangan nanya yang aneh-aneh.',
-        Projects: 'Lo lagi ngecek Projects. Mau tanya soal project? Silakan, gue lagi baik hari ini.',
-        Kontak: 'Lo di halaman Kontak. Mau hubungin Fardan? Ya hubungin aja langsung, ngapain nanya gue.',
-        Home: 'Yo. Gue Pria Sawit Ai, asisten AI-nya Fardan. Mau nanya? Ketik aja, gue jawab kalo gue mau.'
-      },
-      genz: {
-        Profil: 'OMG BESTIE!! 💅✨ Lo lagi di halaman Profil! Mau kepo soal Fardan? LITERALLY tanya aja bestie, I got u!! 🔥',
-        Skills: 'YOOO BESTIE!! 🚀 Lo lagi di halaman Skills nih! Mau tau skill Fardan yang sigma banget? TANYA AJA no cap! ✨',
-        Projects: 'BESTIE AHHH!! 💀🔥 Lo ngecek Projects! Lowkey project-nya fire banget sih, mau tau lebih? ASK MEEE!! ✨',
-        Kontak: 'HIII BESTIE!! 💅 Lo lagi di Kontak! Mau reach out ke Fardan? That\'s so slay of u, tanya aja!! 🫶✨',
-        Home: 'OMG HAI BESTIE!! ✨🔥 Gue Pria Sawit Ai, asisten AI-nya Fardan yang literally the most iconic! Mau nanya? GAS BESTIE!! 💅'
-      }
+      Profil: 'OMG BESTIE!! 💅✨ Lo lagi di halaman Profil! Mau kepo soal Fardan? LITERALLY tanya aja bestie, I got u!! 🔥',
+      Skills: 'YOOO BESTIE!! 🚀 Lo lagi di halaman Skills nih! Mau tau skill Fardan yang sigma banget? TANYA AJA no cap! ✨',
+      Projects: 'BESTIE AHHH!! 💀🔥 Lo ngecek Projects! Lowkey project-nya fire banget sih, mau tau lebih? ASK MEEE!! ✨',
+      Kontak: 'HIII BESTIE!! 💅 Lo lagi di Kontak! Mau reach out ke Fardan? That\'s so slay of u, tanya aja!! 🫶✨',
+      Home: 'OMG HAI BESTIE!! ✨🔥 Gue Pria Sawit Ai, asisten AI-nya Fardan yang literally the most iconic! Mau nanya? GAS BESTIE!! 💅'
     };
-    return greetings[personality]?.[currentPage] || greetings[personality]?.Home;
+    return greetings[currentPage] || greetings.Home;
   }
 
-  function getInitReply(personality) {
-    if (personality === 'genz') {
-      return 'YASS BESTIE gue Pria Sawit Ai!! ✨💅 Tanya apa aja soal Fardan, gue spill semuanya no cap!! 🔥';
-    }
-    return 'Iye iye gue Pria Sawit Ai. Mau nanya? Tanya aja, gue jawab kalo mood.';
-  }
-
-  function getActivePrompt() {
-    return currentPersonality === 'genz' ? PROMPT_GENZ : PROMPT_JUTEK;
+  function getInitReply() {
+    return 'YASS BESTIE gue Pria Sawit Ai!! ✨💅 Tanya apa aja soal Fardan, gue spill semuanya no cap!! 🔥';
   }
 
   // Initialize conversation with system context
   let conversationHistory = [
-    { role: 'user', parts: [{ text: getActivePrompt() }] },
-    { role: 'model', parts: [{ text: getInitReply(currentPersonality) }] }
+    { role: 'user', parts: [{ text: PROMPT_GENZ }] },
+    { role: 'model', parts: [{ text: getInitReply() }] }
   ];
   let isProcessing = false;
   let isChatOpen = false;
@@ -1024,10 +984,10 @@ ${SHARED_DATA}
     localStorage.removeItem(CONV_STORAGE_KEY);
     messagesContainer.innerHTML = '';
     conversationHistory = [
-      { role: 'user', parts: [{ text: getActivePrompt() }] },
-      { role: 'model', parts: [{ text: getInitReply(currentPersonality) }] }
+      { role: 'user', parts: [{ text: PROMPT_GENZ }] },
+      { role: 'model', parts: [{ text: getInitReply() }] }
     ];
-    addMessage(getGreeting(currentPersonality), 'bot', false);
+    addMessage(getGreeting(), 'bot', false);
   }
 
   // Create chatbot HTML
@@ -1040,7 +1000,6 @@ ${SHARED_DATA}
           <h4>Pria Sawit Ai</h4>
           <p><span class="chatbot-status-dot"></span>Online — ${currentPage}</p>
         </div>
-        <button class="chatbot-personality-btn" id="chatbot-personality" title="Ganti kepribadian">${currentPersonality === 'jutek' ? '🔥' : '✨'}</button>
         <button class="chatbot-clear-btn" id="chatbot-clear" title="Hapus riwayat chat">🗑️</button>
       </div>
       <div class="chatbot-messages" id="chatbot-messages"></div>
@@ -1064,7 +1023,6 @@ ${SHARED_DATA}
   const inputField = document.getElementById('chatbot-input-field');
   const sendBtn = document.getElementById('chatbot-send');
   const clearBtn = document.getElementById('chatbot-clear');
-  const personalityBtn = document.getElementById('chatbot-personality');
 
   // Load chat history or show context-aware greeting
   const savedMessages = loadChatHistory();
@@ -1081,7 +1039,7 @@ ${SHARED_DATA}
     }
   } else {
     // Show context-aware greeting
-    addMessage(getGreeting(currentPersonality), 'bot', false);
+    addMessage(getGreeting(), 'bot', false);
   }
 
   // Toggle chat window
@@ -1096,34 +1054,6 @@ ${SHARED_DATA}
 
   // Clear chat button
   clearBtn.addEventListener('click', clearChatHistory);
-
-  // Personality switcher (preserve chat history)
-  function switchPersonality() {
-    currentPersonality = currentPersonality === 'jutek' ? 'genz' : 'jutek';
-    localStorage.setItem(PERSONALITY_KEY, currentPersonality);
-    personalityBtn.textContent = currentPersonality === 'jutek' ? '🔥' : '✨';
-    personalityBtn.title = currentPersonality === 'jutek' ? 'Mode: Jutek — klik untuk Gen Z' : 'Mode: Gen Z — klik untuk Jutek';
-    
-    // Rebuild conversation history with new prompt but keep existing messages
-    const oldMessages = loadChatHistory() || [];
-    conversationHistory = [
-      { role: 'user', parts: [{ text: getActivePrompt() }] },
-      { role: 'model', parts: [{ text: getInitReply(currentPersonality) }] }
-    ];
-    // Re-add user/bot messages to conversation history
-    oldMessages.forEach(msg => {
-      conversationHistory.push({
-        role: msg.type === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.text }]
-      });
-    });
-    saveConvHistory();
-    
-    // Add switch notification in chat (visual only, not saved to history)
-    const modeLabel = currentPersonality === 'jutek' ? '🔥 Mode: Jutek' : '✨ Mode: Gen Z';
-    addMessage(`[Personality switched ke ${modeLabel}]`, 'bot', false);
-  }
-  personalityBtn.addEventListener('click', switchPersonality);
 
   // Send message on Enter
   inputField.addEventListener('keydown', (e) => {

@@ -1855,28 +1855,6 @@ footer p {
   transform: scale(1.1);
 }
 
-/* Personality Toggle Button */
-.chatbot-personality-btn {
-  background: rgba(255, 255, 255, 0.15);
-  border: none;
-  color: white;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  cursor: pointer !important;
-  transition: all var(--transition-fast);
-  flex-shrink: 0;
-}
-
-.chatbot-personality-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1) rotate(15deg);
-}
-
 /* Markdown in chat messages */
 .chat-message.bot strong {
   font-weight: 700;
