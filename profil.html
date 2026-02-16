@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Profil Fardan Azzuhri - Web Developer" />
+    <title>Profil | Fardan.Dev</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👨‍💻</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Loading Animation - Random 7 Styles -->
+    <div class="loader-wrapper">
+      <div class="loader-content loader-morphing"><div class="blob"></div><div class="morphing-logo"><span>F</span><span>a</span><span>r</span><span>d</span><span>a</span><span>n</span><span>.</span><span>D</span><span>e</span><span>v</span></div><div class="loader-text">Loading...</div></div>
+      <div class="loader-content loader-glitch"><div class="scanlines"></div><div class="glitch-logo">Fardan.Dev</div><div class="loader-text">INITIALIZING_</div></div>
+      <div class="loader-content loader-progress"><div class="logo">Fardan.Dev</div><div class="progress-bar"><div class="progress-fill"></div></div><div class="loader-text">Loading assets...</div></div>
+      <div class="loader-content loader-letter"><div class="letter-reveal"><span>F</span><span>a</span><span>r</span><span>d</span><span>a</span><span>n</span><span>.</span><span>D</span><span>e</span><span>v</span></div><div class="loader-text">Loading...</div></div>
+      <div class="loader-content loader-orbit"><div class="orbit-container"><div class="center-logo">F.Dev</div><div class="orbit orbit-1"><div class="planet"></div></div><div class="orbit orbit-2"><div class="planet"></div></div><div class="orbit orbit-3"><div class="planet"></div></div></div><div class="loader-text">Launching...</div></div>
+      <div class="loader-content loader-wave"><div class="wave-logo">Fardan.Dev</div><div class="wave-container"><div class="wave"></div></div><div class="loader-text">Loading...</div></div>
+      <div class="loader-content loader-skeleton"><div class="skeleton-box"><div class="skeleton-header"><div class="skeleton skeleton-avatar"></div><div class="skeleton-text"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-subtitle"></div></div></div><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line"></div></div><div class="loader-text">Loading content...</div></div>
+    </div>
+    
+    <!-- Particle Background -->
+    <canvas id="particles-canvas"></canvas>
+    
+    <nav>
+      <div class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="menu">
+        <a href="index.html">Home</a>
+        <a href="profil.html" class="active">Profil</a>
+        <a href="skills.html">Skills</a>
+        <a href="projects.html">Projects</a>
+        <a href="kontak.html">Kontak</a>
+      </div>
+      <div class="nav-right">
+        <label class="theme-switch">
+          <input type="checkbox" id="theme-toggle">
+          <span class="slider">
+            <span class="sun-icon">☀️</span>
+            <span class="moon-icon">🌙</span>
+          </span>
+        </label>
+      </div>
+    </nav>
+    
+    <section class="page-header">
+      <h1>👤 Profil</h1>
+      <p>Yaa gitu lah pokoknya</p>
+    </section>
+    
+    <div class="kontainer-utama">
+      <!-- Profile Card -->
+      <div class="kartu-ios">
+        <h2>Fardan Azzuhri</h2>
+        <p>
+          <img
+            src="data:image/webp;base64,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"
+            alt="Foto Profil Fardan Azzuhri"
+            class="profile-img"
+          />
+        </p>
+        <p>
+          Aku masih pemula, puh 🚀
+        </p>
+      </div>
+      
+      <!-- About Me Card -->
+      <div class="kartu-ios">
+        <h3>🍽️ Makanan Favorit</h3>
+        <p>Ga ada sih, soalnya hampir semua makanan halal aku makan</p>
+      </div>
+      
+      <!-- Learning Steps Card -->
+      <div class="kartu-ios">
+        <h3>📚 Langkah Belajar</h3>
+        <p>Nyalakan Laptop 💻</p>
+        <p>Buka VS Code 📝</p>
+        <p>Tidur 💤</p>
+      </div>
+      
+      <!-- Schedule Card -->
+      <div class="kartu-ios">
+        <h3>📅 Jadwal Coding</h3>
+        <table>
+          <tr>
+            <th>Hari</th>
+            <th>Waktu</th>
+            <th>Materi</th>
+          </tr>
+          <tr>
+            <td>Senin</td>
+            <td>19:00</td>
+            <td>Nonton Netflix</td>
+          </tr>
+          <tr>
+            <td>Selasa</td>
+            <td>20:00</td>
+            <td>Nonton YouTube</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    
+    <footer>
+      <p>Made with ❤️ by <strong>Fardan Azzuhri</strong></p>
+      <p>© 2026 Fardan.Dev - All rights reserved</p>
+      <div class="social-links">
+        <a href="https://github.com/fardaaannn" target="_blank" class="social-link" title="GitHub">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/aku_fardann/" target="_blank" class="social-link" title="Instagram">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        </a>
+        <a href="mailto:fardaaannn@gmail.com" class="social-link" title="Email">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        </a>
+      </div>
+    </footer>
+    
+    <script src="script.js"></script>
+  </body>
+</html>
