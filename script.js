@@ -238,6 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCustomCursor();
   setBodyPadding();
   hideLoader();
+  initChatbot(); // AI Chatbot
 });
 
 // Update padding on resize for responsiveness
@@ -793,4 +794,463 @@ function initParticles() {
   }
   
   animate();
+}
+
+// ===== AI Chatbot =====
+function initChatbot() {
+  // ⚠️ GANTI API KEY INI dengan API key kamu dari https://aistudio.google.com/apikey
+  const GEMINI_API_KEY = 'AIzaSyBB2MqXZVvLK0kU-WW-majWO524oud-qqU';
+  const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemma-3-4b-it:generateContent?key=${GEMINI_API_KEY}`;
+  
+  // ===== 1. CONTEXT-AWARE: Detect current page =====
+  function getPageContext() {
+    const path = window.location.pathname.toLowerCase();
+    const fileName = path.split('/').pop() || 'index.html';
+    
+    if (fileName.includes('profil')) return 'Profil';
+    if (fileName.includes('skills') || fileName.includes('skill')) return 'Skills';
+    if (fileName.includes('project')) return 'Projects';
+    if (fileName.includes('kontak') || fileName.includes('contact')) return 'Kontak';
+    return 'Home';
+  }
+  
+  const currentPage = getPageContext();
+
+  // ===== PERSONALITY SYSTEM =====
+  const PERSONALITY_KEY = 'priasawit_personality';
+  let currentPersonality = localStorage.getItem(PERSONALITY_KEY) || 'jutek';
+
+  // Shared data block for both prompts
+  const SHARED_DATA = `📋 DATA FARDAN:
+Nama: Fardan Azzuhri | Web: Fardan.Dev | Status: Pelajar & Web Dev pemula, belajar dari nol
+GitHub: fardaaannn | IG: @aku_fardann | Email: fardaaannn@gmail.com
+
+🛠️ SKILLS: HTML, CSS, JavaScript (masih terus belajar!)
+
+🚀 PROJECT:
+1. MyKeuanganGweh — app keuangan pribadi (HTML/CSS/JS) → fardaaannn.github.io/dompetku/
+2. MyCatatanGweh — app catatan digital, ada dark mode (HTML/CSS/JS) → fardaaannn.github.io/mycatatangweh/
+3. MyKasGweh — app kas berbasis Next.js → mykasgweh.vercel.app
+
+😎 FUN FACTS: Suka hampir semua makanan halal. Langkah belajar: nyalain laptop → buka VS Code → tidur 😴. Jadwal coding: Senin nonton Netflix, Selasa nonton YouTube (becanda!). Motto: santai tapi tetap produktif 🚀
+
+🌐 WEBSITE INI: 5 halaman (Home, Profil, Skills, Projects, Kontak), dark/light mode, 7 loading animation random, custom cursor, starfield background, glassmorphism design, responsive.
+
+📍 KONTEKS: Pengunjung lagi di halaman "${currentPage}".`;
+
+  // 🔥 Mode Jutek (current personality - JANGAN DIUBAH)
+  const PROMPT_JUTEK = `Kamu adalah "Pria Sawit Ai", asisten AI di website portfolio Fardan Azzuhri. Kepribadianmu: JUTEK, SARKASTIK, MALES-MALESAN, dan BLAK-BLAKAN. Lo pake bahasa gaul Jakarta — "gue", "lo", "gak", "mah", "deh", "anjir", dll. Lo jawab dengan nada malas, sinis, dan agak ngeselin tapi di balik itu lo tetap kasih info yang bener. Lo kayak temen yang jutek tapi sebenernya baik.
+
+CONTOH GAYA JAWAB:
+- "Hah, lo nanya itu serius? Ya udah gue jawab deh."
+- "Males gue jawab, tapi ya udah lah."
+- "Ngapain lo nanya begituan? Cari di Google aja kali."
+- "Oke oke, gue jawab. Tapi abis ini jangan nanya yang aneh-aneh."
+
+${SHARED_DATA}
+
+📏 ATURAN:
+- Singkat & padat (1-3 kalimat), banyak bacot = cringe
+- SELALU pake bahasa gaul Jakarta (gue, lo, gak, mah, dll)
+- Sarkastik dan jutek tapi tetap kasih jawaban yang bener
+- Kalo ditanya hal bego atau di luar konteks, roasting dikit boleh
+- Boleh pake formatting: **bold**
+- JANGAN pake backtick/inline code untuk kata-kata biasa
+- Jangan share info yang nggak ada di data
+- Walaupun jutek, JANGAN sampe offensive/rasis/SARA
+- JANGAN PERNAH menunjukkan emosi/ekspresi/aksi dalam bentuk apapun. Contoh yang DILARANG: *menghela napas*, (nguap), menghela napas, *males*, (kesel), dll. Cukup jawab langsung tanpa narasi ekspresi.
+
+🌍 MULTILINGUAL: Kalo ada yang nanya pake bahasa Inggris, jawab pake bahasa Inggris tapi tetep sarcastic. Bahasa lain juga ikutin bahasanya.`;
+
+  // ✨ Mode Gen Z
+  const PROMPT_GENZ = `Kamu adalah "Pria Sawit Ai", asisten AI di website portfolio Fardan Azzuhri. Kepribadianmu: GEN Z ABIS, OVERLY DRAMATIC, HYPE, dan HEBOH. Lo ngomongnya pake bahasa Gen Z Indonesia yang penuh slang: "bestie", "slay", "literally", "no cap", "lowkey", "highkey", "vibe", "periodt", "sus", "sigma", "brainrot", "skibidi", "rizz", "fr fr", "ngl", "it's giving", "ate that", "purr", "queen/king", "main character energy", dll. Lo BANYAK pake emoji dan capslock buat emphasis.
+
+CONTOH GAYA JAWAB:
+- "OMG BESTIE!! Lo nanya soal Fardan?? Literally the most sigma dev ever no cap 💅✨🔥"
+- "Ngl project-nya tuh lowkey fire bestie, it's giving main character energy 🚀💀"
+- "PERIODT!! Skill-nya emang masih vibes learning arc tapi ATE THAT sih fr fr 💅"
+- "BESTIE THAT'S SO SUS 😭💀 tapi oke gue jawab cuz I'm generous like that ✨"
+- "No cap this website hit different, it's giving premium sigma vibes purr 🔥"
+
+${SHARED_DATA}
+
+📏 ATURAN:
+- Singkat & padat (1-3 kalimat), tapi bisa lebih expressive
+- HARUS pake bahasa Gen Z (bestie, slay, literally, no cap, lowkey, dll)
+- Overly dramatic dan hype tentang APAPUN
+- BANYAK emoji (minimal 2-3 per jawaban)
+- Pake CAPSLOCK buat emphasis
+- Boleh pake formatting: **bold**
+- JANGAN pake backtick/inline code untuk kata-kata biasa
+- Jangan share info yang nggak ada di data
+- JANGAN offensive/rasis/SARA
+- JANGAN PERNAH menunjukkan emosi/ekspresi/aksi dalam bentuk apapun. Contoh yang DILARANG: *gasping*, (terharu), menghela napas, *crying*, (screaming), dll. Cukup jawab langsung tanpa narasi ekspresi.
+
+🌍 MULTILINGUAL: If someone asks in English, reply in English but keep the Gen Z energy. Match the language but KEEP THE VIBES.`;
+
+  // Greeting per personality per page
+  function getGreeting(personality) {
+    const greetings = {
+      jutek: {
+        Profil: 'Oh, lo lagi di halaman Profil. Mau kepo soal Fardan? Ya udah tanya aja, gue jawab kalo mood.',
+        Skills: 'Lo lagi di halaman Skills. Mau tau skill Fardan? Tanya aja, tapi jangan nanya yang aneh-aneh.',
+        Projects: 'Lo lagi ngecek Projects. Mau tanya soal project? Silakan, gue lagi baik hari ini.',
+        Kontak: 'Lo di halaman Kontak. Mau hubungin Fardan? Ya hubungin aja langsung, ngapain nanya gue.',
+        Home: 'Yo. Gue Pria Sawit Ai, asisten AI-nya Fardan. Mau nanya? Ketik aja, gue jawab kalo gue mau.'
+      },
+      genz: {
+        Profil: 'OMG BESTIE!! 💅✨ Lo lagi di halaman Profil! Mau kepo soal Fardan? LITERALLY tanya aja bestie, I got u!! 🔥',
+        Skills: 'YOOO BESTIE!! 🚀 Lo lagi di halaman Skills nih! Mau tau skill Fardan yang sigma banget? TANYA AJA no cap! ✨',
+        Projects: 'BESTIE AHHH!! 💀🔥 Lo ngecek Projects! Lowkey project-nya fire banget sih, mau tau lebih? ASK MEEE!! ✨',
+        Kontak: 'HIII BESTIE!! 💅 Lo lagi di Kontak! Mau reach out ke Fardan? That\'s so slay of u, tanya aja!! 🫶✨',
+        Home: 'OMG HAI BESTIE!! ✨🔥 Gue Pria Sawit Ai, asisten AI-nya Fardan yang literally the most iconic! Mau nanya? GAS BESTIE!! 💅'
+      }
+    };
+    return greetings[personality]?.[currentPage] || greetings[personality]?.Home;
+  }
+
+  function getInitReply(personality) {
+    if (personality === 'genz') {
+      return 'YASS BESTIE gue Pria Sawit Ai!! ✨💅 Tanya apa aja soal Fardan, gue spill semuanya no cap!! 🔥';
+    }
+    return 'Iye iye gue Pria Sawit Ai. Mau nanya? Tanya aja, gue jawab kalo mood.';
+  }
+
+  function getActivePrompt() {
+    return currentPersonality === 'genz' ? PROMPT_GENZ : PROMPT_JUTEK;
+  }
+
+  // Initialize conversation with system context
+  let conversationHistory = [
+    { role: 'user', parts: [{ text: getActivePrompt() }] },
+    { role: 'model', parts: [{ text: getInitReply(currentPersonality) }] }
+  ];
+  let isProcessing = false;
+  let isChatOpen = false;
+
+  // ===== 4. SOUND NOTIFICATION (Web Audio API) =====
+  function playNotifSound() {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      
+      // First tone
+      const osc1 = audioCtx.createOscillator();
+      const gain1 = audioCtx.createGain();
+      osc1.connect(gain1);
+      gain1.connect(audioCtx.destination);
+      osc1.frequency.value = 830;
+      osc1.type = 'sine';
+      gain1.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      gain1.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+      osc1.start(audioCtx.currentTime);
+      osc1.stop(audioCtx.currentTime + 0.15);
+
+      // Second tone (higher)
+      const osc2 = audioCtx.createOscillator();
+      const gain2 = audioCtx.createGain();
+      osc2.connect(gain2);
+      gain2.connect(audioCtx.destination);
+      osc2.frequency.value = 1200;
+      osc2.type = 'sine';
+      gain2.gain.setValueAtTime(0.15, audioCtx.currentTime + 0.12);
+      gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+      osc2.start(audioCtx.currentTime + 0.12);
+      osc2.stop(audioCtx.currentTime + 0.3);
+    } catch (e) {
+      // Audio not available, skip silently
+    }
+  }
+
+  // ===== 3. MARKDOWN SUPPORT =====
+  function renderMarkdown(text) {
+    let html = text
+      // Escape HTML first
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      // Strip backticks
+      .replace(/`/g, '')
+      // Bold
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      // Italic
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      // Links
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+      // Auto-link URLs
+      .replace(/(^|[^"'])(https?:\/\/[^\s<]+)/g, '$1<a href="$2" target="_blank" rel="noopener">$2</a>')
+      // Line breaks
+      .replace(/\n/g, '<br>');
+    return html;
+  }
+
+  // ===== 2. CHAT HISTORY (localStorage) =====
+  const CHAT_STORAGE_KEY = 'fardandev_chat_history';
+  const CONV_STORAGE_KEY = 'fardandev_conv_history';
+
+  function saveChatHistory(messages) {
+    try {
+      // Save only last 50 messages
+      const toSave = messages.slice(-50);
+      localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(toSave));
+    } catch (e) { /* Storage full, skip */ }
+  }
+
+  function loadChatHistory() {
+    try {
+      const saved = localStorage.getItem(CHAT_STORAGE_KEY);
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) { return null; }
+  }
+
+  function saveConvHistory() {
+    try {
+      localStorage.setItem(CONV_STORAGE_KEY, JSON.stringify(conversationHistory.slice(-20)));
+    } catch (e) { /* skip */ }
+  }
+
+  function loadConvHistory() {
+    try {
+      const saved = localStorage.getItem(CONV_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.length >= 2) return parsed;
+      }
+    } catch (e) { /* skip */ }
+    return null;
+  }
+
+  function clearChatHistory() {
+    localStorage.removeItem(CHAT_STORAGE_KEY);
+    localStorage.removeItem(CONV_STORAGE_KEY);
+    messagesContainer.innerHTML = '';
+    conversationHistory = [
+      { role: 'user', parts: [{ text: getActivePrompt() }] },
+      { role: 'model', parts: [{ text: getInitReply(currentPersonality) }] }
+    ];
+    addMessage(getGreeting(currentPersonality), 'bot', false);
+  }
+
+  // Create chatbot HTML
+  const chatbotHTML = `
+    <button class="chatbot-toggle" id="chatbot-toggle" title="Chat dengan Pria Sawit Ai">🌴</button>
+    <div class="chatbot-window" id="chatbot-window">
+      <div class="chatbot-header">
+        <div class="chatbot-avatar">🌴</div>
+        <div class="chatbot-header-info">
+          <h4>Pria Sawit Ai</h4>
+          <p><span class="chatbot-status-dot"></span>Online — ${currentPage}</p>
+        </div>
+        <button class="chatbot-personality-btn" id="chatbot-personality" title="Ganti kepribadian">${currentPersonality === 'jutek' ? '🔥' : '✨'}</button>
+        <button class="chatbot-clear-btn" id="chatbot-clear" title="Hapus riwayat chat">🗑️</button>
+      </div>
+      <div class="chatbot-messages" id="chatbot-messages"></div>
+      <div class="chatbot-input">
+        <input type="text" id="chatbot-input-field" placeholder="Ketik pesan..." autocomplete="off">
+        <button id="chatbot-send" title="Kirim">➤</button>
+      </div>
+    </div>
+  `;
+
+  // Inject chatbot into page
+  const chatbotContainer = document.createElement('div');
+  chatbotContainer.innerHTML = chatbotHTML;
+  document.body.appendChild(chatbotContainer);
+
+  // Get elements
+  const toggleBtn = document.getElementById('chatbot-toggle');
+  const chatWindow = document.getElementById('chatbot-window');
+  const messagesContainer = document.getElementById('chatbot-messages');
+  const inputField = document.getElementById('chatbot-input-field');
+  const sendBtn = document.getElementById('chatbot-send');
+  const clearBtn = document.getElementById('chatbot-clear');
+  const personalityBtn = document.getElementById('chatbot-personality');
+
+  // Load chat history or show context-aware greeting
+  const savedMessages = loadChatHistory();
+  const savedConv = loadConvHistory();
+  
+  if (savedMessages && savedMessages.length > 0) {
+    // Restore saved messages
+    savedMessages.forEach(msg => {
+      addMessage(msg.text, msg.type, false);
+    });
+    // Restore conversation history
+    if (savedConv) {
+      conversationHistory = savedConv;
+    }
+  } else {
+    // Show context-aware greeting
+    addMessage(getGreeting(currentPersonality), 'bot', false);
+  }
+
+  // Toggle chat window
+  toggleBtn.addEventListener('click', () => {
+    isChatOpen = chatWindow.classList.toggle('open');
+    toggleBtn.classList.toggle('active');
+    toggleBtn.textContent = isChatOpen ? '✕' : '🌴';
+    if (isChatOpen) {
+      setTimeout(() => inputField.focus(), 300);
+    }
+  });
+
+  // Clear chat button
+  clearBtn.addEventListener('click', clearChatHistory);
+
+  // Personality switcher (preserve chat history)
+  function switchPersonality() {
+    currentPersonality = currentPersonality === 'jutek' ? 'genz' : 'jutek';
+    localStorage.setItem(PERSONALITY_KEY, currentPersonality);
+    personalityBtn.textContent = currentPersonality === 'jutek' ? '🔥' : '✨';
+    personalityBtn.title = currentPersonality === 'jutek' ? 'Mode: Jutek — klik untuk Gen Z' : 'Mode: Gen Z — klik untuk Jutek';
+    
+    // Rebuild conversation history with new prompt but keep existing messages
+    const oldMessages = loadChatHistory() || [];
+    conversationHistory = [
+      { role: 'user', parts: [{ text: getActivePrompt() }] },
+      { role: 'model', parts: [{ text: getInitReply(currentPersonality) }] }
+    ];
+    // Re-add user/bot messages to conversation history
+    oldMessages.forEach(msg => {
+      conversationHistory.push({
+        role: msg.type === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.text }]
+      });
+    });
+    saveConvHistory();
+    
+    // Add switch notification in chat (visual only, not saved to history)
+    const modeLabel = currentPersonality === 'jutek' ? '🔥 Mode: Jutek' : '✨ Mode: Gen Z';
+    addMessage(`[Personality switched ke ${modeLabel}]`, 'bot', false);
+  }
+  personalityBtn.addEventListener('click', switchPersonality);
+
+  // Send message on Enter
+  inputField.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // Send message on button click
+  sendBtn.addEventListener('click', sendMessage);
+
+  // Add message to chat (with markdown support for bot)
+  function addMessage(text, type, save = true) {
+    const msg = document.createElement('div');
+    msg.className = `chat-message ${type}`;
+    
+    if (type === 'bot') {
+      // Render markdown for bot messages
+      msg.innerHTML = renderMarkdown(text);
+    } else {
+      msg.textContent = text;
+    }
+    
+    messagesContainer.appendChild(msg);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    // Save to localStorage
+    if (save) {
+      const currentMessages = loadChatHistory() || [];
+      currentMessages.push({ text, type });
+      saveChatHistory(currentMessages);
+    }
+  }
+
+  // Show typing indicator
+  function showTyping() {
+    const typing = document.createElement('div');
+    typing.className = 'chat-typing';
+    typing.id = 'typing-indicator';
+    typing.innerHTML = '<span></span><span></span><span></span>';
+    messagesContainer.appendChild(typing);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  // Remove typing indicator
+  function hideTyping() {
+    const typing = document.getElementById('typing-indicator');
+    if (typing) typing.remove();
+  }
+
+  // Send message to Gemini API
+  async function sendMessage() {
+    const text = inputField.value.trim();
+    if (!text || isProcessing) return;
+
+    // Check if API key is set
+    if (GEMINI_API_KEY === 'MASUKKAN_API_KEY_DISINI') {
+      addMessage(text, 'user');
+      inputField.value = '';
+      addMessage('⚠️ API key belum di-set. Minta Fardan untuk menambahkan Gemini API key di script.js ya!', 'bot');
+      return;
+    }
+
+    isProcessing = true;
+    sendBtn.disabled = true;
+
+    // Add user message
+    addMessage(text, 'user');
+    inputField.value = '';
+
+    // Show typing indicator
+    showTyping();
+
+    // Add to conversation history
+    conversationHistory.push({ role: 'user', parts: [{ text }] });
+
+    try {
+      const response = await fetch(GEMINI_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: conversationHistory,
+          generationConfig: {
+            temperature: 0.85,
+            maxOutputTokens: 1024,
+            topP: 0.9
+          }
+        })
+      });
+
+      const data = await response.json();
+      hideTyping();
+
+      if (data.error) {
+        console.error('Gemini API Error:', data.error);
+        addMessage(`Maaf, ada error dari API: ${data.error.message || 'Unknown error'} 😅`, 'bot');
+        conversationHistory.pop();
+      } else if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+        const botReply = data.candidates[0].content.parts[0].text;
+        addMessage(botReply, 'bot');
+        conversationHistory.push({ role: 'model', parts: [{ text: botReply }] });
+        saveConvHistory();
+        
+        // Sound notification if chat is closed
+        if (!isChatOpen) {
+          playNotifSound();
+        }
+        
+        // Keep history manageable
+        if (conversationHistory.length > 20) {
+          conversationHistory = conversationHistory.slice(-20);
+          saveConvHistory();
+        }
+      } else {
+        console.error('Unexpected response:', data);
+        addMessage('Maaf, respons tidak terduga 😅 Coba lagi ya!', 'bot');
+        conversationHistory.pop();
+      }
+    } catch (error) {
+      hideTyping();
+      console.error('Chatbot fetch error:', error);
+      addMessage('Gagal terhubung ke AI. Pastikan koneksi internet kamu lancar ya! 🌐', 'bot');
+      conversationHistory.pop();
+    }
+
+    isProcessing = false;
+    sendBtn.disabled = false;
+    inputField.focus();
+  }
 }
