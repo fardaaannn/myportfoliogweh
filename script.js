@@ -1048,6 +1048,7 @@ ${SHARED_DATA}
         <input type="text" id="chatbot-input-field" placeholder="Ketik pesan..." autocomplete="off">
         <button id="chatbot-send" title="Kirim">➤</button>
       </div>
+      <p style="font-size: 10px; color: #666; text-align: center; margin-bottom: 10px;">Pria Sawit Ai can make mistakes. So, please recheck the responses.</p>
     </div>
   `;
 
