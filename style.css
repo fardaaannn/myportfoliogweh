@@ -2066,3 +2066,18 @@ footer p {
     font-size: 22px;
   }
 }
+
+/* Sedikit gaya (CSS) agar tombol terlihat lebih rapi */
+.tombol-musik {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.tombol-musik:hover {
+    background-color: #45a049;
+}

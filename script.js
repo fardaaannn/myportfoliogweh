@@ -1185,3 +1185,28 @@ ${SHARED_DATA}
     inputField.focus();
   }
 }
+
+// Mengambil elemen audio dan tombol dari HTML berdasarkan ID-nya
+var musik = document.getElementById("audioKu");
+var tombol = document.getElementById("tombolPutar");
+
+// Variabel penanda apakah musik sedang diputar atau tidak
+var sedangDiputar = false;
+
+function putarAtauJeda() {
+    if (sedangDiputar) {
+        // Jika sedang diputar, maka jeda (pause) lagunya
+        musik.pause();
+        sedangDiputar = false;
+        // Ubah teks tombol kembali ke Putar
+        tombol.innerHTML = "🎵";
+        tombol.style.backgroundColor = "#4CAF50"; // Warna hijau
+    } else {
+        // Jika sedang tidak diputar, maka mainkan (play) lagunya
+        musik.play();
+        sedangDiputar = true;
+        // Ubah teks tombol menjadi Jeda
+        tombol.innerHTML = "⏸️";
+        tombol.style.backgroundColor = "#f44336"; // Warna merah
+    }
+}
