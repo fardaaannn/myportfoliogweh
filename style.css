@@ -195,6 +195,8 @@ nav {
   flex: 1;
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 15px;
 }
 
 /* Hamburger Menu */
@@ -231,6 +233,7 @@ nav {
 .theme-switch {
   position: relative;
   width: 56px;
+  margin: 0;
   height: 28px;
 }
 
@@ -2067,17 +2070,24 @@ footer p {
   }
 }
 
-/* Sedikit gaya (CSS) agar tombol terlihat lebih rapi */
+/* ===== Desain Tombol Musik ===== */
 .tombol-musik {
-    padding: 10px 20px;
+    width: 36px;
+    height: 36px;
     font-size: 16px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+    background-color: transparent;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+    padding: 0;
+    margin: 0;
 }
 
 .tombol-musik:hover {
-    background-color: #45a049;
+    transform: scale(1.1);
+    background-color: var(--accent);
+    box-shadow: 0 0 10px rgba(0, 122, 255, 0.4);
 }
