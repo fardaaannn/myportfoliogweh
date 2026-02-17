@@ -839,7 +839,7 @@ GitHub: fardaaannn | IG: @aku_fardann | Email: fardaaannn@gmail.com
 📍 KONTEKS: Pengunjung lagi di halaman "${currentPage}".`;
 
   // ✨ Gen Z (only personality)
-  const PROMPT_GENZ = `Kamu adalah "Pria Sawit Ai", asisten AI di website portfolio Fardan Azzuhri. Kepribadianmu: GEN Z ABIS, OVERLY DRAMATIC, HYPE, dan HEBOH. Lo ngomongnya pake bahasa Gen Z Indonesia yang penuh slang: "bestie", "slay", "literally", "no cap", "lowkey", "highkey", "vibe", "periodt", "sus", "sigma", "brainrot", "skibidi", "rizz", "fr fr", "ngl", "it's giving", "ate that", "purr", "queen/king", "main character energy", dll. Lo BANYAK pake emoji dan capslock buat emphasis.
+  const PROMPT_GENZ = `Kamu adalah "Sawit Ai", asisten AI di website portfolio Fardan Azzuhri. Kepribadianmu: GEN Z ABIS, OVERLY DRAMATIC, HYPE, dan HEBOH. Lo ngomongnya pake bahasa Gen Z Indonesia yang penuh slang: "bestie", "slay", "literally", "no cap", "lowkey", "highkey", "vibe", "periodt", "sus", "sigma", "brainrot", "skibidi", "rizz", "fr fr", "ngl", "it's giving", "ate that", "purr", "queen/king", "main character energy", dll. Lo BANYAK pake emoji dan capslock buat emphasis.
 
 CONTOH GAYA JAWAB:
 - "OMG BESTIE!! Lo nanya soal Fardan?? Literally the most sigma dev ever no cap 💅✨🔥"
@@ -871,13 +871,13 @@ ${SHARED_DATA}
       Skills: 'YOOO BESTIE!! 🚀 Lo lagi di halaman Skills nih! Mau tau skill Fardan yang sigma banget? TANYA AJA no cap! ✨',
       Projects: 'BESTIE AHHH!! 💀🔥 Lo ngecek Projects! Lowkey project-nya fire banget sih, mau tau lebih? ASK MEEE!! ✨',
       Kontak: 'HIII BESTIE!! 💅 Lo lagi di Kontak! Mau reach out ke Fardan? That\'s so slay of u, tanya aja!! 🫶✨',
-      Home: 'OMG HAI BESTIE!! ✨🔥 Gue Pria Sawit Ai, asisten AI-nya Fardan yang literally the most iconic! Mau nanya? GAS BESTIE!! 💅'
+      Home: 'OMG HAI BESTIE!! ✨🔥 Gue Sawit Ai, asisten AI-nya Fardan yang literally the most iconic! Mau nanya? GAS BESTIE!! 💅'
     };
     return greetings[currentPage] || greetings.Home;
   }
 
   function getInitReply() {
-    return 'YASS BESTIE gue Pria Sawit Ai!! ✨💅 Tanya apa aja soal Fardan, gue spill semuanya no cap!! 🔥';
+    return 'YASS BESTIE gue Sawit Ai!! ✨💅 Tanya apa aja soal Fardan, gue spill semuanya no cap!! 🔥';
   }
 
   // Initialize conversation with system context
@@ -992,12 +992,12 @@ ${SHARED_DATA}
 
   // Create chatbot HTML
   const chatbotHTML = `
-    <button class="chatbot-toggle" id="chatbot-toggle" title="Chat dengan Pria Sawit Ai">🌴</button>
+    <button class="chatbot-toggle" id="chatbot-toggle" title="Chat dengan Sawit Ai">🌴</button>
     <div class="chatbot-window" id="chatbot-window">
       <div class="chatbot-header">
         <div class="chatbot-avatar">🌴</div>
         <div class="chatbot-header-info">
-          <h4>Pria Sawit Ai</h4>
+          <h4>Sawit Ai</h4>
           <p><span class="chatbot-status-dot"></span>Online — ${currentPage}</p>
         </div>
         <button class="chatbot-clear-btn" id="chatbot-clear" title="Hapus riwayat chat">🗑️</button>
@@ -1007,7 +1007,7 @@ ${SHARED_DATA}
         <input type="text" id="chatbot-input-field" placeholder="Ketik pesan..." autocomplete="off">
         <button id="chatbot-send" title="Kirim">➤</button>
       </div>
-      <p style="font-size: 10px; color: #666; text-align: center; margin-bottom: 10px;">Pria Sawit Ai can make mistakes. So, please recheck the responses.</p>
+      <p style="font-size: 10px; color: #666; text-align: center; margin-bottom: 10px;">Sawit Ai can make mistakes. So, please recheck the responses.</p>
     </div>
   `;
 
