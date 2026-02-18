@@ -191,12 +191,72 @@ nav {
   text-decoration: none;
 }
 
+
+
 .nav-right {
   flex: 1;
   display: flex;
   justify-content: flex-end;
   align-items: center;
   gap: 15px;
+  flex-wrap: nowrap;
+}
+
+.music-controls {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 5px;
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(5px);
+}
+
+.music-btn {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 5px 8px;
+  border-radius: 50%;
+  transition: all var(--transition-fast);
+  margin: 0;
+  width: auto;
+  color: var(--text-primary);
+}
+
+.music-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: scale(1.1);
+}
+
+[data-theme="dark"] .music-controls {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .music-btn {
+  color: #fff;
+}
+
+[data-theme="dark"] .music-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 768px) {
+  .nav-right {
+    gap: 8px;
+  }
+  
+  .music-controls {
+    gap: 2px;
+    padding: 3px;
+    transform: scale(0.9);
+  }
+  
+  .music-btn {
+    font-size: 14px;
+    padding: 4px 6px;
+  }
 }
 
 /* Hamburger Menu */

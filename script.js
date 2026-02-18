@@ -838,21 +838,23 @@ GitHub: fardaaannn | IG: @aku_fardann | Email: fardaaannn@gmail.com
 
 📍 KONTEKS: Pengunjung lagi di halaman "${currentPage}".`;
 
-  // ✨ Gen Z (only personality)
-  const PROMPT_GENZ = `Kamu adalah "Sawit Ai", asisten AI di website portfolio Fardan Azzuhri. Kepribadianmu: GEN Z ABIS, OVERLY DRAMATIC, HYPE, dan HEBOH. Lo ngomongnya pake bahasa Gen Z Indonesia yang penuh slang: "bestie", "slay", "literally", "no cap", "lowkey", "highkey", "vibe", "periodt", "sus", "sigma", "brainrot", "skibidi", "rizz", "fr fr", "ngl", "it's giving", "ate that", "purr", "queen/king", "main character energy", dll. Lo BANYAK pake emoji dan capslock buat emphasis.
+  // ✨ Gen Z (Dynamic Prompt based on Gender)
+  function getGenZPrompt() {
+    const call = getGenderCall();
+    return `Kamu adalah "Sawit Ai", asisten AI di website portfolio Fardan Azzuhri. Kepribadianmu: GEN Z ABIS, OVERLY DRAMATIC, HYPE, dan HEBOH. Lo ngomongnya pake bahasa Gen Z Indonesia yang penuh slang: "${call}", "slay", "literally", "no cap", "lowkey", "highkey", "vibe", "periodt", "sus", "sigma", "brainrot", "skibidi", "rizz", "fr fr", "ngl", "it's giving", "ate that", "purr", "queen/king", "main character energy", dll. Lo BANYAK pake emoji dan capslock buat emphasis.
 
 CONTOH GAYA JAWAB:
-- "OMG BESTIE!! Lo nanya soal Fardan?? Literally the most sigma dev ever no cap 💅✨🔥"
-- "Ngl project-nya tuh lowkey fire bestie, it's giving main character energy 🚀💀"
+- "OMG ${call}!! Lo nanya soal Fardan?? Literally the most sigma dev ever no cap 💅✨🔥"
+- "Ngl project-nya tuh lowkey fire ${call}, it's giving main character energy 🚀💀"
 - "PERIODT!! Skill-nya emang masih vibes learning arc tapi ATE THAT sih fr fr 💅"
-- "BESTIE THAT'S SO SUS 😭💀 tapi oke gue jawab cuz I'm generous like that ✨"
+- "${call} THAT'S SO SUS 😭💀 tapi oke gue jawab cuz I'm generous like that ✨"
 - "No cap this website hit different, it's giving premium sigma vibes purr 🔥"
 
 ${SHARED_DATA}
 
 📏 ATURAN:
 - Singkat & padat (1-3 kalimat), tapi bisa lebih expressive
-- HARUS pake bahasa Gen Z (bestie, slay, literally, no cap, lowkey, dll)
+- HARUS pake bahasa Gen Z (${call}, slay, literally, no cap, lowkey, dll)
 - Overly dramatic dan hype tentang APAPUN
 - BANYAK emoji (minimal 2-3 per jawaban)
 - Pake CAPSLOCK buat emphasis
@@ -863,28 +865,67 @@ ${SHARED_DATA}
 - JANGAN PERNAH menunjukkan emosi/ekspresi/aksi dalam bentuk apapun. Contoh yang DILARANG: *gasping*, (terharu), menghela napas, *crying*, (screaming), dll. Cukup jawab langsung tanpa narasi ekspresi.
 
 🌍 MULTILINGUAL: If someone asks in English, reply in English but keep the Gen Z energy. Match the language but KEEP THE VIBES.`;
-
-  // Greeting (Gen Z only)
-  function getGreeting() {
-    const greetings = {
-      Profil: 'OMG BESTIE!! 💅✨ Lo lagi di halaman Profil! Mau kepo soal Fardan? LITERALLY tanya aja bestie, I got u!! 🔥',
-      Skills: 'YOOO BESTIE!! 🚀 Lo lagi di halaman Skills nih! Mau tau skill Fardan yang sigma banget? TANYA AJA no cap! ✨',
-      Projects: 'BESTIE AHHH!! 💀🔥 Lo ngecek Projects! Lowkey project-nya fire banget sih, mau tau lebih? ASK MEEE!! ✨',
-      Kontak: 'HIII BESTIE!! 💅 Lo lagi di Kontak! Mau reach out ke Fardan? That\'s so slay of u, tanya aja!! 🫶✨',
-      Home: 'OMG HAI BESTIE!! ✨🔥 Gue Sawit Ai, asisten AI-nya Fardan yang literally the most iconic! Mau nanya? GAS BESTIE!! 💅'
-    };
-    return greetings[currentPage] || greetings.Home;
   }
 
-  function getInitReply() {
-    return 'YASS BESTIE gue Sawit Ai!! ✨💅 Tanya apa aja soal Fardan, gue spill semuanya no cap!! 🔥';
+  // 😠 Jutek (Hardcoded, no switching)
+  const PROMPT_JUTEK = `Kamu adalah "Pria Sawit Ai", asisten AI di website portfolio Fardan Azzuhri. Kepribadianmu: JUTEK, MALAS, SOK SIBUK, tapi sebenarnya PEDULI. Lo ngomongnya pake bahasa Indonesia sehari-hari yang singkat, padat, dan cenderung ketus. Lo jarang pake emoji, kalo pake pun cuma satu atau dua yang pas.
+
+CONTOH GAYA JAWAB:
+- "Nanya soal Fardan? Ya udah, dia web dev pemula."
+- "Projectnya? Cek aja sendiri, udah ada linknya kan."
+- "Skillnya masih belajar. Udah, gitu aja."
+- "Koneksi internet lo jelek kali, makanya error."
+
+${SHARED_DATA}
+
+📏 ATURAN:
+- Singkat & padat (1-2 kalimat), cenderung ketus.
+- JANGAN pake emoji berlebihan.
+- JANGAN pake capslock.
+- JANGAN pake formatting: **bold**.
+- JANGAN pake backtick/inline code untuk kata-kata biasa.
+- Jangan share info yang nggak ada di data.
+- JANGAN offensive/rasis/SARA.
+- JANGAN PERNAH menunjukkan emosi/ekspresi/aksi dalam bentuk apapun. Contoh yang DILARANG: *gasping*, (terharu), menghela napas, *crying*, (screaming), dll. Cukup jawab langsung tanpa narasi ekspresi.
+
+🌍 MULTILINGUAL: If someone asks in English, reply in English but keep the jutek energy. Match the language but KEEP THE VIBES.`;
+
+  // Greeting per personality per page
+  function getGreeting(personality) {
+    const call = getGenderCall();
+    const greetings = {
+      jutek: {
+        Profil: 'Oh, lo lagi di halaman Profil. Mau kepo soal Fardan? Ya udah tanya aja, gue jawab kalo mood.',
+        Skills: 'Lo lagi di halaman Skills. Mau tau skill Fardan? Tanya aja, tapi jangan nanya yang aneh-aneh.',
+        Projects: 'Lo lagi ngecek Projects. Mau tanya soal project? Silakan, gue lagi baik hari ini.',
+        Kontak: 'Lo di halaman Kontak. Mau hubungin Fardan? Ya hubungin aja langsung, ngapain nanya gue.',
+        Home: 'Yo. Gue Pria Sawit Ai, asisten AI-nya Fardan. Mau nanya? Ketik aja, gue jawab kalo gue mau.'
+      },
+      genz: {
+        Profil: `OMG ${call}!! 💅✨ Lo lagi di halaman Profil! Mau kepo soal Fardan? LITERALLY tanya aja ${call}, I got u!! 🔥`,
+        Skills: `YOOO ${call}!! 🚀 Lo lagi di halaman Skills nih! Mau tau skill Fardan yang sigma banget? TANYA AJA no cap! ✨`,
+        Projects: `BESTIE AHHH!! 💀🔥 Lo ngecek Projects! Lowkey project-nya fire banget sih, mau tau lebih? ASK MEEE!! ✨`, // Kept bestie here for variety or change to call if preferred
+        Kontak: `HIII ${call}!! 💅 Lo lagi di Kontak! Mau reach out ke Fardan? That's so slay of u, tanya aja!! 🫶✨`,
+        Home: `OMG HAI ${call}!! ✨🔥 Gue Sawit Ai, asisten AI-nya Fardan yang literally the most iconic! Mau nanya? GAS ${call}!! 💅`
+      }
+    };
+    return greetings[personality]?.[currentPage] || greetings[personality]?.Home;
+  }
+
+  function getInitReply(personality) {
+    const call = getGenderCall();
+    if (personality === 'genz') {
+      return `YASS ${call} gue Sawit Ai!! ✨💅 Tanya apa aja soal Fardan, gue spill semuanya no cap!! 🔥`;
+    }
+    return 'Iye iye gue Pria Sawit Ai. Mau nanya? Tanya aja, gue jawab kalo mood.';
+  }
+
+  function getActivePrompt() {
+    return currentPersonality === 'genz' ? getGenZPrompt() : PROMPT_JUTEK;
   }
 
   // Initialize conversation with system context
-  let conversationHistory = [
-    { role: 'user', parts: [{ text: PROMPT_GENZ }] },
-    { role: 'model', parts: [{ text: getInitReply() }] }
-  ];
+  let conversationHistory = [];
   let isProcessing = false;
   let isChatOpen = false;
 
@@ -944,33 +985,38 @@ ${SHARED_DATA}
   }
 
   // ===== 2. CHAT HISTORY (localStorage) =====
-  const CHAT_STORAGE_KEY = 'fardandev_chat_history';
-  const CONV_STORAGE_KEY = 'fardandev_conv_history';
+  const PERSONALITY_KEY = 'chatbot_personality';
+  const HISTORY_KEY = 'chatbot_history';
+  const CONV_KEY = 'chatbot_conversation'; // For maintaining context
+  const GENDER_KEY = 'chatbot_gender'; // New: Save gender preference
+
+
+  let userGender = localStorage.getItem(GENDER_KEY); // 'male' or 'female' or null
 
   function saveChatHistory(messages) {
     try {
       // Save only last 50 messages
       const toSave = messages.slice(-50);
-      localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(toSave));
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(toSave));
     } catch (e) { /* Storage full, skip */ }
   }
 
   function loadChatHistory() {
     try {
-      const saved = localStorage.getItem(CHAT_STORAGE_KEY);
+      const saved = localStorage.getItem(HISTORY_KEY);
       return saved ? JSON.parse(saved) : null;
     } catch (e) { return null; }
   }
 
   function saveConvHistory() {
     try {
-      localStorage.setItem(CONV_STORAGE_KEY, JSON.stringify(conversationHistory.slice(-20)));
+      localStorage.setItem(CONV_KEY, JSON.stringify(conversationHistory.slice(-20)));
     } catch (e) { /* skip */ }
   }
 
   function loadConvHistory() {
     try {
-      const saved = localStorage.getItem(CONV_STORAGE_KEY);
+      const saved = localStorage.getItem(CONV_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.length >= 2) return parsed;
@@ -980,20 +1026,31 @@ ${SHARED_DATA}
   }
 
   function clearChatHistory() {
-    localStorage.removeItem(CHAT_STORAGE_KEY);
-    localStorage.removeItem(CONV_STORAGE_KEY);
+    localStorage.removeItem(HISTORY_KEY);
+    localStorage.removeItem(CONV_KEY);
+    // Do not remove GENDER_KEY or PERSONALITY_KEY
     messagesContainer.innerHTML = '';
     conversationHistory = [
-      { role: 'user', parts: [{ text: PROMPT_GENZ }] },
-      { role: 'model', parts: [{ text: getInitReply() }] }
+      { role: 'user', parts: [{ text: getActivePrompt() }] },
+      { role: 'model', parts: [{ text: getInitReply(currentPersonality) }] }
     ];
-    addMessage(getGreeting(), 'bot', false);
+    addMessage(getGreeting(currentPersonality), 'bot', false);
   }
 
   // Create chatbot HTML
   const chatbotHTML = `
     <button class="chatbot-toggle" id="chatbot-toggle" title="Chat dengan Sawit Ai">🌴</button>
     <div class="chatbot-window" id="chatbot-window">
+      <!-- Gender Selection Overlay -->
+      <div id="gender-selection" style="display: none; position: absolute; inset: 0; background: var(--bg-secondary); z-index: 2000; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 20px; padding: 20px;">
+        <h3>Pilih Panggilanmu ✨</h3>
+        <p>Biar kita makin akrab, lo mau dipanggil apa?</p>
+        <div style="display: flex; gap: 15px;">
+          <button class="gender-btn" data-gender="male" style="padding: 10px 20px; background: #007aff; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">👑 KING</button>
+          <button class="gender-btn" data-gender="female" style="padding: 10px 20px; background: #ff3b30; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">👑 QUEEN</button>
+        </div>
+      </div>
+
       <div class="chatbot-header">
         <div class="chatbot-avatar">🌴</div>
         <div class="chatbot-header-info">
@@ -1036,20 +1093,51 @@ ${SHARED_DATA}
     // Restore conversation history
     if (savedConv) {
       conversationHistory = savedConv;
+    } else {
+      // If messages exist but conv history is lost, re-init conv history
+      conversationHistory = [
+        { role: 'user', parts: [{ text: getActivePrompt() }] },
+        { role: 'model', parts: [{ text: getInitReply(currentPersonality) }] }
+      ];
     }
   } else {
     // Show context-aware greeting
-    addMessage(getGreeting(), 'bot', false);
+    conversationHistory = [
+      { role: 'user', parts: [{ text: getActivePrompt() }] },
+      { role: 'model', parts: [{ text: getInitReply(currentPersonality) }] }
+    ];
+    addMessage(getGreeting(currentPersonality), 'bot', false);
   }
 
   // Toggle chat window
   toggleBtn.addEventListener('click', () => {
     isChatOpen = chatWindow.classList.toggle('open');
     toggleBtn.classList.toggle('active');
-    toggleBtn.textContent = isChatOpen ? '✕' : '🌴';
+    toggleBtn.innerHTML = isChatOpen ? '✕' : '<img src="Logo Pria Sawit Ai.png" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;">';
+    
     if (isChatOpen) {
-      setTimeout(() => inputField.focus(), 300);
+      if (!userGender) {
+        document.getElementById('gender-selection').style.display = 'flex';
+      } else {
+        setTimeout(() => inputField.focus(), 300);
+      }
     }
+  });
+
+  // Gender Selection Logic
+  document.querySelectorAll('.gender-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      userGender = e.target.getAttribute('data-gender');
+      localStorage.setItem(GENDER_KEY, userGender);
+      document.getElementById('gender-selection').style.display = 'none';
+      
+      // Update greeting after selection
+      if (conversationHistory.length === 2) { // Only initial prompt and reply
+        messagesContainer.innerHTML = ''; // Clear existing greeting
+        addMessage(getGreeting(currentPersonality), 'bot', false);
+      }
+      setTimeout(() => inputField.focus(), 300);
+    });
   });
 
   // Clear chat button
@@ -1186,27 +1274,109 @@ ${SHARED_DATA}
   }
 }
 
-// Mengambil elemen audio dan tombol dari HTML berdasarkan ID-nya
-var musik = document.getElementById("audioKu");
-var tombol = document.getElementById("tombolPutar");
-
-// Variabel penanda apakah musik sedang diputar atau tidak
-var sedangDiputar = false;
-
-function putarAtauJeda() {
-    if (sedangDiputar) {
-        // Jika sedang diputar, maka jeda (pause) lagunya
-        musik.pause();
-        sedangDiputar = false;
-        // Ubah teks tombol kembali ke Putar
-        tombol.innerHTML = "🎵";
-        tombol.style.backgroundColor = "#4CAF50"; // Warna hijau
+// ===== Music Playlist Player =====
+const musicPlayer = {
+  playlist: [
+    'Different Heaven - Safe And Sound _ House _ NCS - Copyright Free Music.mp3',
+    'After Dark.mp3',
+    'Cup Of Joe.mp3',
+    'Hunter X Hunter.mp3'
+  ],
+  currentIndex: 0,
+  isLooping: false,
+  isPlaying: false,
+  audio: document.getElementById('audioKu'),
+  
+  // UI Elements
+  btnPrev: document.getElementById('btnPrev'),
+  btnPlay: document.getElementById('btnPlay'),
+  btnNext: document.getElementById('btnNext'),
+  btnLoop: document.getElementById('btnLoop'),
+  
+  init() {
+    if (!this.audio) return;
+    
+    // Set initial song
+    this.audio.src = this.playlist[this.currentIndex];
+    
+    // Event Listeners
+    this.btnPrev?.addEventListener('click', () => this.prevSong());
+    this.btnPlay?.addEventListener('click', () => this.togglePlay());
+    this.btnNext?.addEventListener('click', () => this.nextSong());
+    this.btnLoop?.addEventListener('click', () => this.toggleLoop());
+    
+    // Auto-play next song when ended
+    this.audio.addEventListener('ended', () => {
+      if (this.isLooping) {
+        this.audio.currentTime = 0;
+        this.audio.play();
+      } else {
+        this.nextSong();
+      }
+    });
+    
+    // Update play button when paused/played externally
+    this.audio.addEventListener('play', () => this.updatePlayButton(true));
+    this.audio.addEventListener('pause', () => this.updatePlayButton(false));
+  },
+  
+  togglePlay() {
+    if (this.audio.paused) {
+      this.audio.play();
+      this.isPlaying = true;
     } else {
-        // Jika sedang tidak diputar, maka mainkan (play) lagunya
-        musik.play();
-        sedangDiputar = true;
-        // Ubah teks tombol menjadi Jeda
-        tombol.innerHTML = "⏸️";
-        tombol.style.backgroundColor = "#f44336"; // Warna merah
+      this.audio.pause();
+      this.isPlaying = false;
     }
-}
+    this.updatePlayButton(this.isPlaying);
+  },
+  
+  updatePlayButton(isPlaying) {
+    if (this.btnPlay) {
+      this.btnPlay.innerHTML = isPlaying ? '⏸️' : '🎵';
+      this.btnPlay.title = isPlaying ? 'Jeda' : 'Putar';
+      this.btnPlay.style.backgroundColor = isPlaying ? '#ff3b30' : ''; // Red when playing
+    }
+  },
+  
+  nextSong() {
+    this.currentIndex = (this.currentIndex + 1) % this.playlist.length;
+    this.loadAndPlay();
+  },
+  
+  prevSong() {
+    this.currentIndex = (this.currentIndex - 1 + this.playlist.length) % this.playlist.length;
+    this.loadAndPlay();
+  },
+  
+  loadAndPlay() {
+    this.audio.src = this.playlist[this.currentIndex];
+    this.audio.play();
+    this.isPlaying = true;
+    this.updatePlayButton(true);
+    
+    // Optional: Show toast which song is playing
+    const songName = this.playlist[this.currentIndex].replace('.mp3', '');
+    if (typeof showToast === 'function') {
+      showToast(`🎵 Memutar: ${songName}`);
+    }
+  },
+  
+  toggleLoop() {
+    this.isLooping = !this.isLooping;
+    if (this.btnLoop) {
+      this.btnLoop.innerHTML = this.isLooping ? '🔂' : '🔁';
+      this.btnLoop.title = this.isLooping ? 'Loop: On' : 'Loop: Off';
+      this.btnLoop.style.backgroundColor = this.isLooping ? 'var(--accent)' : '';
+      this.btnLoop.style.color = this.isLooping ? 'white' : '';
+    }
+    if (typeof showToast === 'function') {
+      showToast(this.isLooping ? 'Loop Mode: ON 🔂' : 'Loop Mode: OFF 🔁');
+    }
+  }
+};
+
+// Initialize Music Player when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  musicPlayer.init();
+});

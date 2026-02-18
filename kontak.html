@@ -40,6 +40,17 @@
         <a href="kontak.html" class="active">Kontak</a>
       </div>
       <div class="nav-right">
+        <div class="music-controls">
+          <button id="btnPrev" class="music-btn" title="Lagu Sebelumnya">⏮️</button>
+          <button id="btnPlay" class="music-btn" title="Putar/Jeda">🎵</button>
+          <button id="btnNext" class="music-btn" title="Lagu Selanjutnya">⏭️</button>
+          <button id="btnLoop" class="music-btn" title="Loop: Off">🔁</button>
+        </div>
+        
+        <audio id="audioKu">
+            <source src="" type="audio/mpeg">
+        </audio>
+
         <label class="theme-switch">
           <input type="checkbox" id="theme-toggle">
           <span class="slider">
