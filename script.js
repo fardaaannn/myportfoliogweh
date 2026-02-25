@@ -798,9 +798,8 @@ function initParticles() {
 
 // ===== AI Chatbot =====
 function initChatbot() {
-  // ⚠️ GANTI API KEY INI dengan API key kamu dari https://aistudio.google.com/apikey
-  const GEMINI_API_KEY = 'AIzaSyBB2MqXZVvLK0kU-WW-majWO524oud-qqU';
-  const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemma-3-4b-it:generateContent?key=${GEMINI_API_KEY}`;
+  // Backend API endpoint (API key sudah aman di backend)
+  const GEMINI_API_URL = '/api/chat';
   
   // ===== 1. CONTEXT-AWARE: Detect current page =====
   function getPageContext() {
@@ -1193,18 +1192,10 @@ ${SHARED_DATA}
     if (typing) typing.remove();
   }
 
-  // Send message to Gemini API
+  // Send message to Backend API
   async function sendMessage() {
     const text = inputField.value.trim();
     if (!text || isProcessing) return;
-
-    // Check if API key is set
-    if (GEMINI_API_KEY === 'MASUKKAN_API_KEY_DISINI') {
-      addMessage(text, 'user');
-      inputField.value = '';
-      addMessage('⚠️ API key belum di-set. Minta Fardan untuk menambahkan Gemini API key di script.js ya!', 'bot');
-      return;
-    }
 
     isProcessing = true;
     sendBtn.disabled = true;
@@ -1220,16 +1211,15 @@ ${SHARED_DATA}
     conversationHistory.push({ role: 'user', parts: [{ text }] });
 
     try {
+      // Prepare message with system context
+      const systemPrompt = getActivePrompt();
+      const messageWithContext = `[SYSTEM CONTEXT]\n${systemPrompt}\n\n[USER MESSAGE]\n${text}`;
+
       const response = await fetch(GEMINI_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: conversationHistory,
-          generationConfig: {
-            temperature: 0.85,
-            maxOutputTokens: 1024,
-            topP: 0.9
-          }
+          message: messageWithContext
         })
       });
 
@@ -1237,11 +1227,11 @@ ${SHARED_DATA}
       hideTyping();
 
       if (data.error) {
-        console.error('Gemini API Error:', data.error);
-        addMessage(`Maaf, ada error dari API: ${data.error.message || 'Unknown error'} 😅`, 'bot');
+        console.error('Backend Error:', data.error);
+        addMessage(`Maaf, ada error: ${data.error} 😅`, 'bot');
         conversationHistory.pop();
-      } else if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-        const botReply = data.candidates[0].content.parts[0].text;
+      } else if (data.response) {
+        const botReply = data.response;
         addMessage(botReply, 'bot');
         conversationHistory.push({ role: 'model', parts: [{ text: botReply }] });
         saveConvHistory();
@@ -1263,8 +1253,8 @@ ${SHARED_DATA}
       }
     } catch (error) {
       hideTyping();
-      console.error('Chatbot fetch error:', error);
-      addMessage('Gagal terhubung ke AI. Pastikan koneksi internet kamu lancar ya! 🌐', 'bot');
+      console.error('Backend fetch error:', error);
+      addMessage('Gagal terhubung ke server. Pastikan koneksi internet kamu lancar ya! 🌐', 'bot');
       conversationHistory.pop();
     }
 
