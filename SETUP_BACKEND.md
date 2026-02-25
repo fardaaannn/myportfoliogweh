@@ -17,11 +17,13 @@ API key Gemini sudah dipindahkan ke backend untuk keamanan! Berikut cara deploy:
 ## Deploy ke Vercel (Rekomendasi)
 
 ### 1. Install Node modules (Optional untuk local testing)
+
 ```bash
 npm install
 ```
 
 ### 2. Commit ke GitHub
+
 ```bash
 git add .
 git commit -m "Add Gemini backend API"
@@ -29,21 +31,24 @@ git push origin main
 ```
 
 ### 3. Deploy ke Vercel
+
 - Buka https://vercel.com
 - Click "Add New..." → "Project"
 - Import GitHub repository
 - Click "Deploy"
 
 ### 4. Set Environment Variable di Vercel
+
 - Buka Vercel Dashboard
 - Pilih project → Settings → Environment Variables
 - Tambah variable:
   - **Name**: `GEMINI_API_KEY`
-   - **Value**: `AIzaSyDt-GmLhXO6lULNsE8gu10UWfHg_-NEFws`
+  - **Value**: `AIzaSyDt-GmLhXO6lULNsE8gu10UWfHg_-NEFws`
 - Click "Save"
 - Redeploy project
 
 ### 5. Done! 🎉
+
 Website sudah live di Vercel dengan backend API yang aman.
 
 ---
@@ -90,14 +95,17 @@ Site akan available di `http://localhost:3000`
 ## Troubleshooting
 
 **Error: "API key tidak ditemukan"**
+
 - Pastikan environment variable `GEMINI_API_KEY` sudah di-set di Vercel
 
 **Error: "Gagal terhubung ke server"**
+
 - Refresh page
 - Cek koneksi internet
 - Cek Console (F12) untuk error detail
 
 **Local test tidak jalan**
+
 - Pastikan `node_modules` sudah di-install: `npm install`
 - Restart terminal
 
