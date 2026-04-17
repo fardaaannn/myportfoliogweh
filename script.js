@@ -1045,6 +1045,13 @@ ${SHARED_DATA}
 
   let userGender = localStorage.getItem(GENDER_KEY); // 'male' or 'female' or null
 
+  // Returns gender-appropriate call name
+  function getGenderCall() {
+    if (userGender === 'male') return 'king';
+    if (userGender === 'female') return 'queen';
+    return 'bestie';
+  }
+
   function saveChatHistory(messages) {
     try {
       // Save only last 50 messages
@@ -1178,7 +1185,7 @@ ${SHARED_DATA}
     toggleBtn.classList.toggle("active");
     toggleBtn.innerHTML = isChatOpen
       ? "✕"
-      : '<img src="Logo Pria Sawit Ai.png" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;">';
+      : '🌴';
 
     if (isChatOpen) {
       if (!userGender) {

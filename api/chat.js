@@ -1,5 +1,3 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
 export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader("Access-Control-Allow-Credentials", "true");
@@ -29,15 +27,32 @@ export default async function handler(req, res) {
   }
 
   try {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const response = await fetch("https://api.sumopod.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.SUMOPOD_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "deepseek-r1",
+        messages: [
+          { role: "user", content: message },
+        ],
+        max_tokens: 500,
+      }),
+    });
 
-    const result = await model.generateContent(message);
-    const responseText = result.response.text();
+    const data = await response.json();
 
+    if (!response.ok) {
+      console.error("Sumopod API Error:", data);
+      return res.status(response.status).json({ error: data.error?.message || "API error" });
+    }
+
+    const responseText = data.choices?.[0]?.message?.content || "No response";
     res.status(200).json({ response: responseText });
   } catch (error) {
-    console.error("Gemini API Error:", error);
+    console.error("Sumopod API Error:", error);
     res.status(500).json({ error: error.message || "Internal server error" });
   }
 }
