@@ -324,6 +324,15 @@ function initCustomCursor() {
     return;
   }
 
+  // Respect users who prefer reduced motion: keep the native cursor and skip
+  // the animated trail entirely.
+  if (
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
+    return;
+  }
+
   // Custom cursor is active: now it's safe to hide the native cursor via CSS.
   document.body.classList.add("custom-cursor-active");
 
@@ -393,9 +402,25 @@ function initCustomCursor() {
       prevY = trail.y;
     });
 
-    requestAnimationFrame(animateCursor);
+    cursorRaf = requestAnimationFrame(animateCursor);
   }
-  animateCursor();
+
+  // Pause the loop while the tab is hidden, resume when visible again.
+  let cursorRaf = null;
+  function startCursorLoop() {
+    if (cursorRaf === null) cursorRaf = requestAnimationFrame(animateCursor);
+  }
+  function stopCursorLoop() {
+    if (cursorRaf !== null) {
+      cancelAnimationFrame(cursorRaf);
+      cursorRaf = null;
+    }
+  }
+  startCursorLoop();
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stopCursorLoop();
+    else startCursorLoop();
+  });
 
   // Hover effects for interactive elements
   const hoverElements = document.querySelectorAll(
@@ -502,6 +527,9 @@ function initParticles() {
   if (!canvas) return;
 
   const ctx = canvas.getContext("2d");
+  const prefersReducedMotion =
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let stars = [];
   let shootingStars = [];
   let mouse = { x: null, y: null };
@@ -895,10 +923,30 @@ function initParticles() {
       });
     }
 
-    requestAnimationFrame(animate);
+    // Stop here for reduced-motion users (a single static frame is drawn) or
+    // while the tab is hidden; the loop is resumed on visibilitychange.
+    if (prefersReducedMotion || document.hidden) return;
+    particleRaf = requestAnimationFrame(animate);
   }
 
+  let particleRaf = null;
+  function stopParticleLoop() {
+    if (particleRaf !== null) {
+      cancelAnimationFrame(particleRaf);
+      particleRaf = null;
+    }
+  }
+
+  // Draw at least one frame so the background isn't blank, then (when motion
+  // is allowed and the tab is visible) animate() schedules itself.
   animate();
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      stopParticleLoop();
+    } else if (!prefersReducedMotion && particleRaf === null) {
+      particleRaf = requestAnimationFrame(animate);
+    }
+  });
 }
 
 // ===== AI Chatbot =====
