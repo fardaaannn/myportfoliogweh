@@ -86,15 +86,43 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Server belum dikonfigurasi" });
   }
 
-  const { message } = req.body || {};
+  const body = req.body || {};
+  const MAX_CHARS = 4000; // batas panjang per pesan
+  const MAX_TURNS = 12; // batas jumlah turn yang diteruskan ke model
 
-  if (!message || typeof message !== "string") {
+  // Bangun daftar messages. Mendukung dua format:
+  //  - Baru (multi-turn): { system, messages: [{ role, content }, ...] }
+  //  - Lama (single)    : { message: "..." }
+  let chatMessages;
+
+  if (Array.isArray(body.messages) && body.messages.length > 0) {
+    chatMessages = [];
+
+    if (typeof body.system === "string" && body.system.trim()) {
+      chatMessages.push({
+        role: "system",
+        content: body.system.slice(0, 8000),
+      });
+    }
+
+    // Hanya teruskan turn terbaru supaya biaya & latensi terkendali.
+    for (const m of body.messages.slice(-MAX_TURNS)) {
+      if (!m || typeof m.content !== "string" || !m.content.trim()) continue;
+      const role =
+        m.role === "assistant" || m.role === "system" ? m.role : "user";
+      chatMessages.push({ role, content: m.content.slice(0, MAX_CHARS) });
+    }
+
+    if (chatMessages.filter((m) => m.role !== "system").length === 0) {
+      return res.status(400).json({ error: "Message is required" });
+    }
+  } else if (typeof body.message === "string" && body.message.trim()) {
+    if (body.message.length > MAX_CHARS) {
+      return res.status(400).json({ error: "Message terlalu panjang" });
+    }
+    chatMessages = [{ role: "user", content: body.message }];
+  } else {
     return res.status(400).json({ error: "Message is required" });
-  }
-
-  // Batasi panjang input untuk mencegah penyalahgunaan / biaya berlebih
-  if (message.length > 4000) {
-    return res.status(400).json({ error: "Message terlalu panjang" });
   }
 
   try {
@@ -108,8 +136,10 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           model: "deepseek-r1",
-          messages: [{ role: "user", content: message }],
-          max_tokens: 500,
+          messages: chatMessages,
+          // deepseek-r1 "berpikir" dulu sebelum menjawab, jadi token harus
+          // cukup besar agar jawaban final tidak terpotong.
+          max_tokens: 1500,
         }),
       },
     );
@@ -123,7 +153,12 @@ export default async function handler(req, res) {
         .json({ error: data.error?.message || "API error" });
     }
 
-    const responseText = data.choices?.[0]?.message?.content || "No response";
+    // deepseek-r1 adalah reasoning model: jawabannya bisa diawali blok
+    // <think>...</think>. Buang blok itu supaya user hanya melihat jawaban.
+    const raw = data.choices?.[0]?.message?.content || "";
+    const cleaned = raw.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+    const responseText = cleaned || raw.trim() || "No response";
+
     res.status(200).json({ response: responseText });
   } catch (error) {
     console.error("Sumopod API Error:", error);
