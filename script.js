@@ -63,28 +63,92 @@ function initHamburger() {
   const hamburger = document.querySelector(".hamburger");
   const menu = document.querySelector(".menu");
 
-  if (hamburger && menu) {
-    hamburger.addEventListener("click", () => {
-      hamburger.classList.toggle("active");
-      menu.classList.toggle("active");
-    });
+  if (!hamburger || !menu) return;
 
-    // Close menu when clicking a link
-    menu.querySelectorAll("a").forEach((link) => {
-      link.addEventListener("click", () => {
-        hamburger.classList.remove("active");
-        menu.classList.remove("active");
-      });
-    });
+  // Accessibility: turn the <div> into a real, keyboard-operable control.
+  if (!menu.id) menu.id = "primary-menu";
+  hamburger.setAttribute("role", "button");
+  hamburger.setAttribute("tabindex", "0");
+  hamburger.setAttribute("aria-controls", menu.id);
+  hamburger.setAttribute("aria-expanded", "false");
+  hamburger.setAttribute("aria-label", "Buka menu navigasi");
 
-    // Close menu when clicking outside
-    document.addEventListener("click", (e) => {
-      if (!hamburger.contains(e.target) && !menu.contains(e.target)) {
-        hamburger.classList.remove("active");
-        menu.classList.remove("active");
-      }
-    });
+  const setOpen = (open) => {
+    hamburger.classList.toggle("active", open);
+    menu.classList.toggle("active", open);
+    hamburger.setAttribute("aria-expanded", open ? "true" : "false");
+    hamburger.setAttribute(
+      "aria-label",
+      open ? "Tutup menu navigasi" : "Buka menu navigasi",
+    );
+  };
+
+  const toggle = () => setOpen(!menu.classList.contains("active"));
+
+  hamburger.addEventListener("click", toggle);
+
+  // Keyboard: Enter / Space activate the toggle (like a native button)
+  hamburger.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+      e.preventDefault();
+      toggle();
+    }
+  });
+
+  // Close menu when clicking a link
+  menu.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => setOpen(false));
+  });
+
+  // Close menu when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!hamburger.contains(e.target) && !menu.contains(e.target)) {
+      setOpen(false);
+    }
+  });
+
+  // Close on Escape and return focus to the toggle
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && menu.classList.contains("active")) {
+      setOpen(false);
+      hamburger.focus();
+    }
+  });
+}
+
+// ===== Accessibility Enhancements =====
+// Applied via JS so it stays consistent across all 5 duplicated HTML pages.
+function initA11yEnhancements() {
+  // Icon-only controls need an accessible name for screen readers.
+  // Use stable, purpose-based labels (not state-based) so they never go stale.
+  const buttonLabels = {
+    btnPrev: "Lagu sebelumnya",
+    btnPlay: "Putar atau jeda musik",
+    btnNext: "Lagu selanjutnya",
+    btnLoop: "Ulang lagu (loop)",
+  };
+  Object.entries(buttonLabels).forEach(([id, label]) => {
+    const el = document.getElementById(id);
+    if (el && !el.getAttribute("aria-label")) {
+      el.setAttribute("aria-label", label);
+    }
+  });
+
+  // The theme toggle is a bare checkbox with no visible text label.
+  const themeToggle = document.getElementById("theme-toggle");
+  if (themeToggle && !themeToggle.getAttribute("aria-label")) {
+    themeToggle.setAttribute("aria-label", "Ganti tema terang/gelap");
   }
+
+  // Harden links opening in a new tab against tab-nabbing / referrer leakage.
+  document.querySelectorAll('a[target="_blank"]').forEach((link) => {
+    const rel = (link.getAttribute("rel") || "")
+      .split(/\s+/)
+      .filter(Boolean);
+    if (!rel.includes("noopener")) rel.push("noopener");
+    if (!rel.includes("noreferrer")) rel.push("noreferrer");
+    link.setAttribute("rel", rel.join(" "));
+  });
 }
 
 // ===== Scroll Reveal Animation =====
@@ -238,6 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initRandomLoader(); // Initialize random loader first
   initTheme();
   initHamburger();
+  initA11yEnhancements();
   initScrollReveal();
   initSkillBars();
   initFormValidation();
@@ -258,6 +323,9 @@ function initCustomCursor() {
   if ("ontouchstart" in window || navigator.maxTouchPoints > 0) {
     return;
   }
+
+  // Custom cursor is active: now it's safe to hide the native cursor via CSS.
+  document.body.classList.add("custom-cursor-active");
 
   // Create cursor elements
   const cursor = document.createElement("div");

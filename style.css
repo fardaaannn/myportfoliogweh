@@ -64,6 +64,13 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+/* Sembunyikan cursor native HANYA saat custom cursor aktif (class ditambah
+   oleh JS). Dengan begini cursor tetap muncul sebagai fallback kalau JS gagal
+   dimuat, sehingga situs tidak terasa "rusak" di desktop. */
+body.custom-cursor-active,
+body.custom-cursor-active * {
   cursor: none !important;
 }
 
