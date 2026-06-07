@@ -1,11 +1,8 @@
 {
   "name": "my-portfolio",
   "version": "1.0.0",
-  "description": "Portfolio statis dengan chatbot AI via Sumopod (serverless function di Vercel)",
+  "description": "Portfolio statis (HTML/CSS/JS) - Fardan.Dev",
   "private": true,
-  "scripts": {
-    "dev": "vercel dev"
-  },
   "dependencies": {},
   "devDependencies": {}
 }
