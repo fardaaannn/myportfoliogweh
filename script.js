@@ -1041,6 +1041,20 @@ ${SHARED_DATA}
   let isProcessing = false;
   let isChatOpen = false;
 
+  // Seed turns shown when a chat starts. Flagged with `seed: true` so they are
+  // NOT sent to the backend as real conversation turns (the system prompt is
+  // sent separately via the `system` field).
+  function getSeedConversation() {
+    return [
+      { role: "user", parts: [{ text: getActivePrompt() }], seed: true },
+      {
+        role: "model",
+        parts: [{ text: getInitReply(currentPersonality) }],
+        seed: true,
+      },
+    ];
+  }
+
   // ===== 4. SOUND NOTIFICATION (Web Audio API) =====
   function playNotifSound() {
     try {
@@ -1108,7 +1122,7 @@ ${SHARED_DATA}
   // ===== 2. CHAT HISTORY (localStorage) =====
   const PERSONALITY_KEY = "chatbot_personality";
   const HISTORY_KEY = "chatbot_history";
-  const CONV_KEY = "chatbot_conversation"; // For maintaining context
+  const CONV_KEY = "chatbot_conversation_v2"; // For maintaining context (v2: seed-flagged)
   const GENDER_KEY = "chatbot_gender"; // New: Save gender preference
 
   let userGender = localStorage.getItem(GENDER_KEY); // 'male' or 'female' or null
@@ -1168,10 +1182,7 @@ ${SHARED_DATA}
     localStorage.removeItem(CONV_KEY);
     // Do not remove GENDER_KEY or PERSONALITY_KEY
     messagesContainer.innerHTML = "";
-    conversationHistory = [
-      { role: "user", parts: [{ text: getActivePrompt() }] },
-      { role: "model", parts: [{ text: getInitReply(currentPersonality) }] },
-    ];
+    conversationHistory = getSeedConversation();
     addMessage(getGreeting(currentPersonality), "bot", false);
   }
 
@@ -1233,17 +1244,11 @@ ${SHARED_DATA}
       conversationHistory = savedConv;
     } else {
       // If messages exist but conv history is lost, re-init conv history
-      conversationHistory = [
-        { role: "user", parts: [{ text: getActivePrompt() }] },
-        { role: "model", parts: [{ text: getInitReply(currentPersonality) }] },
-      ];
+      conversationHistory = getSeedConversation();
     }
   } else {
     // Show context-aware greeting
-    conversationHistory = [
-      { role: "user", parts: [{ text: getActivePrompt() }] },
-      { role: "model", parts: [{ text: getInitReply(currentPersonality) }] },
-    ];
+    conversationHistory = getSeedConversation();
     addMessage(getGreeting(currentPersonality), "bot", false);
   }
 
@@ -1353,15 +1358,25 @@ ${SHARED_DATA}
     conversationHistory.push({ role: "user", parts: [{ text }] });
 
     try {
-      // Prepare message with system context
-      const systemPrompt = getActivePrompt();
-      const messageWithContext = `[SYSTEM CONTEXT]\n${systemPrompt}\n\n[USER MESSAGE]\n${text}`;
+      // Build OpenAI-style multi-turn messages from the real conversation.
+      // Seed turns (system prompt + canned reply) are flagged and excluded;
+      // the system prompt is sent separately so the model treats it as a
+      // proper system instruction. Only the most recent turns are sent.
+      const apiMessages = conversationHistory
+        .filter((m) => !m.seed)
+        .map((m) => ({
+          role: m.role === "model" ? "assistant" : "user",
+          content: m.parts?.[0]?.text ?? "",
+        }))
+        .filter((m) => m.content)
+        .slice(-12);
 
       const response = await fetch(GEMINI_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: messageWithContext,
+          system: getActivePrompt(),
+          messages: apiMessages,
         }),
       });
 
