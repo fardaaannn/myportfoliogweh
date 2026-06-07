@@ -866,7 +866,7 @@ GitHub: fardaaannn | IG: @aku_fardann | Email: fardaaannn@gmail.com
 🛠️ SKILLS: HTML, CSS, JavaScript (masih terus belajar!)
 
 🚀 PROJECT:
-1. MyKeuanganGweh — app keuangan pribadi (HTML/CSS/JS) → fardaaannn.github.io/dompetku/
+1. MyKeuanganGweh — app keuangan pribadi (HTML/CSS/JS) → fardaaannn.github.io/mykeuangangweh/
 2. MyCatatanGweh — app catatan digital, ada dark mode (HTML/CSS/JS) → fardaaannn.github.io/mycatatangweh/
 3. MyKasGweh — app kas berbasis Next.js → mykasgweh.vercel.app
 
